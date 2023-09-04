@@ -33,7 +33,7 @@ public class Main {
                 case 2: {
                     System.out.println("Enter book id");
                     int id = scanner.nextInt();
-                    if(Book.checkBookPresence(id)) {
+                    if(Book.findBook(id)) {
                         Book book = new Book();
                         System.out.println("Enter new title");
                         bufferDump = scanner.nextLine();
@@ -58,21 +58,40 @@ public class Main {
                     System.out.println("you want to delete an old book");
                     System.out.println("Enter book id");
                     int id = scanner.nextInt();
-                    if(Book.checkBookPresence(id) && Book.deleteBook(id)) {
-                        System.out.println("Book deleted successfully");
+                    if(Book.findBook(id)) {
+                        Book.deleteBook(id);
+                    } else {
+                        System.out.println("Book not found");
                     }
                     break;
                 }
                 case 4: {
-                    System.out.println("you want to display all books");
+                    System.out.println("Here are all books");
+                    Book.displayBooks();
                     break;
                 }
                 case 5: {
-                    System.out.println("you want to display borrowed books");
+                    System.out.println("Here are all the borrowed books");
+                    Book.displayBorrowedBooks();
                     break;
                 }
                 case 6: {
                     System.out.println("you want to borrow a book");
+                    System.out.println("Enter book code");
+                    bufferDump = scanner.nextLine();
+                    String isbn = scanner.nextLine();
+                    if(Book.findBook(isbn)) {
+                        System.out.println("This book is available!");
+                        System.out.print("\nEnter client name: ");
+                        String name = scanner.nextLine();
+                        System.out.print("\nEnter client membership number: ");
+                        int membershipNumber = scanner.nextInt();
+
+                        // CREATE BORROWING METHOD
+
+                    } else {
+                        System.out.println("Unfortunately, This book is unavailable!");
+                    }
                     break;
                 }
                 case 7: {
@@ -100,12 +119,12 @@ public class Main {
     }
 
     private static int displayMenu() {
-        System.out.println("Choose desired operation:");
-        System.out.println("1. Add new book");
-        System.out.println("2. Update old book");
-        System.out.println("3. Delete old book");
-        System.out.println("4. Display all books");
-        System.out.println("5. Display borrowed books");
+        System.out.println("\nChoose desired operation:");
+        System.out.println("1. Add new book"); // V
+        System.out.println("2. Update old book"); // V
+        System.out.println("3. Delete old book"); // V
+        System.out.println("4. Display all books"); // V
+        System.out.println("5. Display borrowed books"); // V
         System.out.println("6. Borrow a book");
         System.out.println("7. Return a book");
         System.out.println("8. Search a book");

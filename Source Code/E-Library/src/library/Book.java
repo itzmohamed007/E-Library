@@ -11,6 +11,11 @@ public class Book {
     private String status;
     private String isbn;
 
+    @Override
+    public String toString() {
+        return title + "\n" + author + "\n" + status + "\n" + isbn + "\n";
+    }
+
     public String getTitle() {
         return this.title;
     }
@@ -39,19 +44,21 @@ public class Book {
         this.isbn = isbn;
     }
 
-    public ResultSet displayBooks() {
-        Statement statement = null;
-        ResultSet books = null;
-
+    public static void displayBooks() {
         try {
-            statement = DBConnection.getConnection().createStatement();
-            books = statement.executeQuery("SELECT * from books");
+            Statement statement = DBConnection.getConnection().createStatement();
+            ResultSet books = statement.executeQuery("SELECT * from books");
+            while (books.next()) {
+                System.out.println("title: " + books.getString("title"));
+                System.out.println("author: " + books.getString("author"));
+                System.out.println("status: " + books.getString("status"));
+                System.out.println("=====================");
+            }
             statement.close();
         } catch (SQLException e) {
             System.out.println("something went wrong while fetching books data");
             System.out.println(e.getMessage());
         }
-        return books;
     }
 
     public void insertBook(Book book) {
@@ -107,11 +114,47 @@ public class Book {
         return res;
     }
 
-    public static boolean checkBookPresence(int id) {
+    public static void displayBorrowedBooks() {
+        try {
+            Statement statement = DBConnection.getConnection().createStatement();
+            ResultSet borrowedBooks = statement.executeQuery("SELECT borrows.start_date, borrows.end_date, books.title, books.author, clients.name, clients.membershipNumber FROM borrows, books, clients WHERE books.id = borrows.book_id AND clients.id = borrows.client_id");
+            while(borrowedBooks.next()) {
+                System.out.println("Title: " + borrowedBooks.getString("title"));
+                System.out.println("Author: " + borrowedBooks.getString("author"));
+                System.out.println("Client: " + borrowedBooks.getString("name"));
+                System.out.println("Membership Number: " + borrowedBooks.getString("membershipNumber"));
+                System.out.println("Start Date: " + borrowedBooks.getDate("start_date"));
+                System.out.println("End Date: " + borrowedBooks.getDate("end_date"));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println("something went wrong while fetching borrowed books");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static boolean findBook(int id) {
         boolean bookPresence = false;
         try {
             PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM books WHERE id = ?");
             preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                bookPresence = true;
+            }
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return bookPresence;
+    }
+
+    public static boolean findBook(String isbn) {
+        boolean bookPresence = false;
+        try {
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM books WHERE isbn = ? AND status = ?");
+            preparedStatement.setString(1, isbn);
+            preparedStatement.setString(2, "Available");
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
                 bookPresence = true;
