@@ -1,14 +1,14 @@
 import library.Book;
-import library.DBConnection;
+import library.Client;
 
-import java.sql.*;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
     public static String bufferDump = null;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         System.out.println("Welcome back to E-Library");
 
         int choice;
@@ -80,17 +80,34 @@ public class Main {
                     System.out.println("Enter book code");
                     bufferDump = scanner.nextLine();
                     String isbn = scanner.nextLine();
-                    if(Book.findBook(isbn)) {
+                    int bookId = Book.findBook(isbn);
+                    if(bookId != 0) {
                         System.out.println("This book is available!");
-                        System.out.print("\nEnter client name: ");
-                        String name = scanner.nextLine();
-                        System.out.print("\nEnter client membership number: ");
+                        System.out.print("Enter client name: ");
+                        String clientName = scanner.nextLine();
+                        System.out.print("Enter client membership number: ");
                         int membershipNumber = scanner.nextInt();
+                        // inserting new client
+                        Client client = new Client(clientName, membershipNumber);
+                        int clientId = client.insertClient(client);
+                        boolean clientHistory = Client.checkClientHistory(clientId);
 
-                        // CREATE BORROWING METHOD
+                        if(clientHistory) {
+                            System.out.println("You have already borrowed a book");
+                            break;
+                        }
 
+                        System.out.print("Enter end date (YYYY-MM-DD): ");
+                        bufferDump = scanner.nextLine();
+                        String end_date = scanner.nextLine();
+
+                        if(Book.borrowBook(end_date, isbn, bookId, clientId)) {
+                            System.out.println("Operation passed successfully!");
+                        } else {
+                            System.out.println("Operation failed");
+                        }
                     } else {
-                        System.out.println("Unfortunately, This book is unavailable!");
+                        System.out.println("This book is unavailable!");
                     }
                     break;
                 }
@@ -125,7 +142,7 @@ public class Main {
         System.out.println("3. Delete old book"); // V
         System.out.println("4. Display all books"); // V
         System.out.println("5. Display borrowed books"); // V
-        System.out.println("6. Borrow a book");
+        System.out.println("6. Borrow a book"); // X
         System.out.println("7. Return a book");
         System.out.println("8. Search a book");
         System.out.println("9. Get stats");
