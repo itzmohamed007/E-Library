@@ -1,5 +1,6 @@
 import library.Book;
 import library.Client;
+import library.DBConnection;
 
 import java.text.ParseException;
 import java.util.Scanner;
@@ -90,7 +91,7 @@ public class Main {
                         // inserting new client
                         Client client = new Client(clientName, membershipNumber);
                         int clientId = client.insertClient(client);
-                        boolean clientHistory = Client.checkClientHistory(clientId);
+                        boolean clientHistory = Client.checkClientPresence(clientName, membershipNumber);
 
                         if(clientHistory) {
                             System.out.println("You have already borrowed a book");
@@ -142,7 +143,7 @@ public class Main {
         System.out.println("3. Delete old book"); // V
         System.out.println("4. Display all books"); // V
         System.out.println("5. Display borrowed books"); // V
-        System.out.println("6. Borrow a book"); // X
+        System.out.println("6. Borrow a book"); // V
         System.out.println("7. Return a book");
         System.out.println("8. Search a book");
         System.out.println("9. Get stats");

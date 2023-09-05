@@ -53,13 +53,30 @@ public class Client {
         return clientId;
     }
 
-    public static boolean checkClientHistory(int ClientId) {
+    public static boolean checkClientPresence(String name, int membershipNumber) {
         boolean res = false;
         try {
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT start_date, end_date FROM borrows WHERE client_id = ?");
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM clients WHERE name = ? OR membership_number = ?");
+            preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, membershipNumber);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                res = checkClientHistory(resultSet.getInt(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("something went wrong while checking client presence");
+            System.out.println(e.getMessage());
+        }
+        return res;
+    }
+
+    private static boolean checkClientHistory(int ClientId) {
+        boolean res = false;
+        try {
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM borrows WHERE client_id = ?");
             preparedStatement.setInt(1, ClientId);
-            int numRows = preparedStatement.executeUpdate();
-            if(numRows > 0) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
                 res = true;
             }
         } catch (SQLException e) {
