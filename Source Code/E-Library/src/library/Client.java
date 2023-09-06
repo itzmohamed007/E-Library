@@ -53,12 +53,11 @@ public class Client {
         return clientId;
     }
 
-    public static boolean checkClientPresence(String name, int membershipNumber) {
+    public static boolean checkClientPresence(int membershipNumber) {
         boolean res = false;
         try {
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM clients WHERE name = ? OR membership_number = ?");
-            preparedStatement.setString(1, name);
-            preparedStatement.setInt(2, membershipNumber);
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM clients WHERE membership_number = ?");
+            preparedStatement.setInt(1, membershipNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
                 res = checkClientHistory(resultSet.getInt(1));

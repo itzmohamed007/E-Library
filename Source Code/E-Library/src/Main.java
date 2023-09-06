@@ -88,15 +88,17 @@ public class Main {
                         String clientName = scanner.nextLine();
                         System.out.print("Enter client membership number: ");
                         int membershipNumber = scanner.nextInt();
-                        // inserting new client
-                        Client client = new Client(clientName, membershipNumber);
-                        int clientId = client.insertClient(client);
-                        boolean clientHistory = Client.checkClientPresence(clientName, membershipNumber);
+                        // checking client presence
+                        boolean clientHistory = Client.checkClientPresence(membershipNumber);
 
                         if(clientHistory) {
                             System.out.println("You have already borrowed a book");
                             break;
                         }
+
+                        // inserting new client
+                        Client client = new Client(clientName, membershipNumber);
+                        int clientId = client.insertClient(client);
 
                         System.out.print("Enter end date (YYYY-MM-DD): ");
                         bufferDump = scanner.nextLine();
@@ -114,10 +116,21 @@ public class Main {
                 }
                 case 7: {
                     System.out.println("you want to return a book");
+                    System.out.print("Enter book code: ");
+                    bufferDump = scanner.nextLine();
+                    String isbn = scanner.nextLine();
+                    if(Book.returnBook(isbn)) {
+                        System.out.println("Book Returned Successfully!");
+                    } else {
+                        System.out.println("Book not found!");
+                    }
                     break;
                 }
                 case 8: {
-                    System.out.println("you want to search for a book");
+                    System.out.print("Enter book title or isbn code: ");
+                    bufferDump = scanner.nextLine();
+                    String target = scanner.nextLine();
+                    Book.search(target);
                     break;
                 }
                 case 9: {
@@ -146,7 +159,7 @@ public class Main {
         System.out.println("6. Borrow a book"); // V
         System.out.println("7. Return a book");
         System.out.println("8. Search a book");
-        System.out.println("9. Get stats");
+        System.out.println("9. Get stats"); // V
         System.out.println("10. Exit");
 
         return scanner.nextInt();

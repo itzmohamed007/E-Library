@@ -158,10 +158,6 @@ public class Book {
 
     public static boolean borrowBook(String endDate, String isbn, int bookId, int clientId) throws ParseException {
         boolean res = false;
-        // modifying book status
-        if(updateBook(isbn, "Borrowed")) {
-            res = true;
-        }
         // formatting dates
         Date fEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
         java.sql.Date sqlEndDate = new java.sql.Date(fEndDate.getTime());
@@ -181,6 +177,38 @@ public class Book {
         }
 
         return res;
+    }
+
+    public static boolean returnBook(String isbn) {
+        boolean res = false;
+        try {
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("DELETE FROM borrows WHERE book_id = ?");
+            preparedStatement.setInt(1, getBookId(isbn));
+            int numRows = preparedStatement.executeUpdate();
+            if(numRows > 0) {
+                res = true;
+            }
+        } catch (SQLException e) {
+            System.out.println("something went wrong while returning book");
+            System.out.println(e.getMessage());
+        }
+        return res;
+    }
+
+    private static int getBookId(String isbn) {
+        int bookId = 0;
+        try {
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT id FROM books WHERE isbn = ?");
+            preparedStatement.setString(1, isbn);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                bookId = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("something went wrong while fetching book id");
+            System.out.println(e.getMessage());
+        }
+        return bookId;
     }
 
     public static boolean findBook(int id) {
@@ -208,12 +236,36 @@ public class Book {
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
                 bookId = resultSet.getInt(1);
-                System.out.println("found book id: " + bookId);
             }
             preparedStatement.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return bookId;
+    }
+
+    public static boolean search(String target) {
+        boolean res = false;
+        try {
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM books WHERE title LIKE CONCAT( '%', ?, '%') or author LIKE CONCAT( '%', ?, '%')");
+            preparedStatement.setString(1, target);
+            preparedStatement.setString(2, target);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                res = true;
+                do {
+                    System.out.println("title: " + resultSet.getString("title"));
+                    System.out.println("author: " + resultSet.getString("author"));
+                    System.out.println("status: " + resultSet.getString("status"));
+                } while (resultSet.next());
+            } else {
+                System.out.println("No books found!");
+            }
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println("Something went wrong while searching books");
+            System.out.println(e.getMessage());
+        }
+        return res;
     }
 }
