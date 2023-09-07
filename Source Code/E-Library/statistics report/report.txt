@@ -1,0 +1,4 @@
+Library Report: 
+Available books: 2
+Borrowed books: 1
+Lost books: 0

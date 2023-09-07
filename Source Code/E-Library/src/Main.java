@@ -134,7 +134,7 @@ public class Main {
                     break;
                 }
                 case 9: {
-                    System.out.println("you want to display stats");
+                    Book.getStats();
                     break;
                 }
                 case 10: {

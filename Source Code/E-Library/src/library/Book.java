@@ -1,12 +1,14 @@
 package library;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 
 public class Book {
@@ -267,5 +269,41 @@ public class Book {
             System.out.println(e.getMessage());
         }
         return res;
+    }
+
+    public static void getStats() {
+        try {
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("select (select count(*) from books where status = ?) as available, (select count(*) from books where status = ?) as borrowed, (select count(*) from books where status = ?) as lost");
+            preparedStatement.setString(1, "Available");
+            preparedStatement.setString(2, "Borrowed");
+            preparedStatement.setString(3, "Lost");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                System.out.println("Available Books: " + resultSet.getInt("Available"));
+                System.out.println("Borrowed Books: " + resultSet.getInt("Borrowed"));
+                System.out.println("Lost Books: " + resultSet.getInt("Lost"));
+            }
+            System.out.println("Report is ready!");
+            createFile(resultSet);
+        } catch (SQLException e) {
+            System.out.println("something went wrong while fetching statistics");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void createFile(ResultSet stats) throws SQLException {
+        try {
+            File file = new File("C:\\Users\\adm\\Desktop\\E-Library\\Source Code\\E-Library\\statistics report\\report.txt");
+            FileWriter writer = new FileWriter("statistics report\\report.txt");
+            if(!file.exists()) file.createNewFile();
+            writer.write("Library Report: \n");
+            writer.write("Available books: " + stats.getString("Available") + "\n");
+            writer.write("Borrowed books: " + stats.getString("Borrowed") + "\n");
+            writer.write("Lost books: " + stats.getString("Lost") + "\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("something went wrong while creating a new file");
+            System.out.println(e.getMessage());
+        }
     }
 }
