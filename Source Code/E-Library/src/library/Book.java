@@ -53,7 +53,7 @@ public class Book {
     public static void displayBooks() {
         try {
             Statement statement = DBConnection.getConnection().createStatement();
-            ResultSet books = statement.executeQuery("SELECT * from books");
+            ResultSet books = statement.executeQuery("SELECT * from books where status = ?");
             while (books.next()) {
                 System.out.println("title: " + books.getString("title"));
                 System.out.println("author: " + books.getString("author"));
@@ -158,11 +158,18 @@ public class Book {
         }
     }
 
-    public static boolean borrowBook(String endDate, String isbn, int bookId, int clientId) throws ParseException {
+    public static boolean borrowBook(String endDate, String isbn, int bookId, int clientId) {
         boolean res = false;
         // formatting dates
-        Date fEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
-        java.sql.Date sqlEndDate = new java.sql.Date(fEndDate.getTime());
+        Date fEndDate = null;
+        java.sql.Date sqlEndDate = null;
+        try {
+            fEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+            sqlEndDate = new java.sql.Date(fEndDate.getTime());
+        } catch (ParseException e) {
+            System.out.println("something went wrong while formatting date");
+            System.out.println(e.getMessage());
+        }
 
         try {
             PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("INSERT INTO borrows (start_date, end_date, book_id, client_id) VALUES (CURRENT_DATE, ?, ?, ?)");

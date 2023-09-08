@@ -1,17 +1,27 @@
 import library.Book;
 import library.Client;
-import library.DBConnection;
-
-import java.text.ParseException;
+import library.Libraryan;
 import java.util.Scanner;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
-    public static String bufferDump = null;
+    private String args[] = new String[10];
+    private static String bufferDump = null;
 
-    public static void main(String[] args) throws ParseException {
-        System.out.println("Welcome back to E-Library");
+    public static void main(String[] args)  {
+        System.out.print("enter your name: ");
+//        bufferDump = scanner.nextLine();
+        String name = scanner.nextLine();
+        System.out.print("enter your identifier: ");
+        String identifier = scanner.nextLine();
+        if(Libraryan.login(name, identifier)) {
+            System.out.println("logged in successfully!");
+        } else {
+            System.out.println("logging failed!");
+            main(args);
+        }
 
+        System.out.println("Welcome to E-Library");
         int choice;
         do {
             choice = displayMenu();
@@ -150,17 +160,19 @@ public class Main {
     }
 
     private static int displayMenu() {
-        System.out.println("\nChoose desired operation:");
-        System.out.println("1. Add new book"); // V
-        System.out.println("2. Update old book"); // V
-        System.out.println("3. Delete old book"); // V
-        System.out.println("4. Display all books"); // V
-        System.out.println("5. Display borrowed books"); // V
-        System.out.println("6. Borrow a book"); // V
-        System.out.println("7. Return a book");
-        System.out.println("8. Search a book");
-        System.out.println("9. Get stats"); // V
-        System.out.println("10. Exit");
+        System.out.println("|---------------------------------------------------|");
+        System.out.println("|             Choose desired operation:             |");
+        System.out.println("|             1. Add new book                       |");
+        System.out.println("|             2. Update old book                    |");
+        System.out.println("|             3. Delete old book                    |");
+        System.out.println("|             4. Display all books                  |");
+        System.out.println("|             5. Display borrowed books             |");
+        System.out.println("|             6. Borrow a book                      |");
+        System.out.println("|             7. Return a book                      |");
+        System.out.println("|             8. Search a book                      |");
+        System.out.println("|             9. Get stats                          |");
+        System.out.println("|             10. Exit                              |");
+        System.out.println("|---------------------------------------------------|");
 
         return scanner.nextInt();
     }
