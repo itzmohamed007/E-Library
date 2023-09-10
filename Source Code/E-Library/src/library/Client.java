@@ -7,12 +7,6 @@ import java.sql.Statement;
 
 public class Client {
     private String name;
-    private int membershipNumber;
-
-    public Client(String name, int membershipNumber) {
-        this.name = name;
-        this.membershipNumber = membershipNumber;
-    }
 
     public String getName() {
         return this.name;
@@ -21,59 +15,48 @@ public class Client {
         this.name = name;
     }
 
-    public int getMembershipNumber() {
-        return this.membershipNumber;
-    }
-    public void setMembershipNumber(int membershipNumber) {
-        this.membershipNumber = membershipNumber;
-    }
-
-    public int insertClient(Client client) {
-        int clientId = 0;
+    public static int insertClient(String name) {
+        int membershipNumber = 0;
         try {
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("INSERT INTO clients (name, membership_number) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, client.getName());
-            preparedStatement.setInt(2, client.getMembershipNumber());
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("INSERT INTO clients (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, name);
             int rowCount = preparedStatement.executeUpdate();
             if(rowCount == 0) {
                 throw new SQLException("Creating client failed, no rows affected");
             }
-            // getting new inserted client id
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if(generatedKeys.next()) {
-                clientId = generatedKeys.getInt(1);
-            } else {
-                throw new SQLException("Creating client failed, no ID obtained");
+                membershipNumber = generatedKeys.getInt(1);
             }
             preparedStatement.close();
         } catch (SQLException e) {
             System.out.println("something went wrong while inserting new client");
             System.out.println(e.getMessage());
         }
-        return clientId;
+        return membershipNumber;
     }
 
-    public static boolean checkClientPresence(int membershipNumber) {
+    public static boolean checkClientHistory(int membership) {
         boolean res = false;
         try {
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM clients WHERE membership_number = ?");
-            preparedStatement.setInt(1, membershipNumber);
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM borrows WHERE membership = ?");
+            preparedStatement.setInt(1, membership);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
-                res = checkClientHistory(resultSet.getInt(1));
+                res = true;
             }
         } catch (SQLException e) {
-            System.out.println("something went wrong while checking client presence");
+            System.out.println("something went wrong while checking client history");
             System.out.println(e.getMessage());
         }
         return res;
     }
 
-    private static boolean checkClientHistory(int ClientId) {
+    public static boolean checkClientPresence(int membership) {
         boolean res = false;
         try {
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM borrows WHERE client_id = ?");
-            preparedStatement.setInt(1, ClientId);
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("SELECT * FROM clients WHERE membership = ?");
+            preparedStatement.setInt(1, membership);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
                 res = true;

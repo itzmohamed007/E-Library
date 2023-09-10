@@ -10,7 +10,6 @@ public class Main {
 
     public static void main(String[] args)  {
         System.out.print("enter your name: ");
-//        bufferDump = scanner.nextLine();
         String name = scanner.nextLine();
         System.out.print("enter your identifier: ");
         String identifier = scanner.nextLine();
@@ -77,12 +76,10 @@ public class Main {
                     break;
                 }
                 case 4: {
-                    System.out.println("Here are all books");
                     Book.displayBooks();
                     break;
                 }
                 case 5: {
-                    System.out.println("Here are all the borrowed books");
                     Book.displayBorrowedBooks();
                     break;
                 }
@@ -93,33 +90,51 @@ public class Main {
                     String isbn = scanner.nextLine();
                     int bookId = Book.findBook(isbn);
                     if(bookId != 0) {
-                        System.out.println("This book is available!");
-                        System.out.print("Enter client name: ");
-                        String clientName = scanner.nextLine();
-                        System.out.print("Enter client membership number: ");
-                        int membershipNumber = scanner.nextInt();
-                        // checking client presence
-                        boolean clientHistory = Client.checkClientPresence(membershipNumber);
-
-                        if(clientHistory) {
-                            System.out.println("You have already borrowed a book");
-                            break;
+                        System.out.println("Is client new or a member ?");
+                        System.out.println("1. A new client");
+                        System.out.println("2. A member");
+                        switch (scanner.nextInt()) {
+                            case 1: {
+                                System.out.print("Enter full name: ");
+                                bufferDump = scanner.nextLine();
+                                String clientName = scanner.nextLine();
+                                int membership = Client.insertClient(clientName);
+                                System.out.println("New client membership number: " + membership);
+                                System.out.print("Enter end date (YYYY-MM-DD): ");
+                                String end_date = scanner.nextLine();
+                                if(Book.borrowBook(end_date, bookId, membership)) {
+                                    System.out.println("Operation done successfully!");
+                                } else {
+                                    System.out.println("Operation failed");
+                                }
+                                break;
+                            }
+                            case 2: {
+                                System.out.print("Enter membership number: ");
+                                int membership = scanner.nextInt();
+                                if(!Client.checkClientPresence(membership)) {
+                                    System.out.println("Client not found");
+                                    break;
+                                } else if(Client.checkClientHistory(membership)) {
+                                    System.out.println("Client already borrowed a book");
+                                    break;
+                                }
+                                System.out.print("Enter end date (YYYY-MM-DD): ");
+                                bufferDump = scanner.nextLine();
+                                String end_date = scanner.nextLine();
+                                if(Book.borrowBook(end_date, bookId, membership)) {
+                                    System.out.println("Operation done successfully!");
+                                } else {
+                                    System.out.println("Operation failed");
+                                }
+                                break;
+                            }
+                            default:
+                                System.out.println("invalid choice");
+                                break;
                         }
-
-                        // inserting new client
-                        Client client = new Client(clientName, membershipNumber);
-                        int clientId = client.insertClient(client);
-
-                        System.out.print("Enter end date (YYYY-MM-DD): ");
-                        bufferDump = scanner.nextLine();
-                        String end_date = scanner.nextLine();
-
-                        if(Book.borrowBook(end_date, isbn, bookId, clientId)) {
-                            System.out.println("Operation passed successfully!");
-                        } else {
-                            System.out.println("Operation failed");
-                        }
-                    } else {
+                    }
+                    else {
                         System.out.println("This book is unavailable!");
                     }
                     break;
