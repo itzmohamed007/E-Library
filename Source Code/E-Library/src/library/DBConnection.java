@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final String DB_URL = "jdbc:mysql://localhost/library";
+    private static final String DB_URL = "jdbc:mysql://localhost/library2";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "root";
     private static Connection connection = null;
@@ -24,6 +24,7 @@ public class DBConnection {
         try {
             connection.close();
         } catch(SQLException exception) {
+            System.out.println("something went wrong while closing connection");
             System.out.println(exception.getMessage());
         }
     }

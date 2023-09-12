@@ -1,32 +1,21 @@
 import library.Book;
 import library.Client;
-import library.Libraryan;
+import library.DBConnection;
+import library.Librarian;
 import java.util.Scanner;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
-    private String args[] = new String[10];
     private static String bufferDump = null;
 
     public static void main(String[] args)  {
-        System.out.print("enter your name: ");
-        String name = scanner.nextLine();
-        System.out.print("enter your identifier: ");
-        String identifier = scanner.nextLine();
-        if(Libraryan.login(name, identifier)) {
-            System.out.println("logged in successfully!");
-        } else {
-            System.out.println("logging failed!");
-            main(args);
-        }
-
+        login();
         System.out.println("Welcome to E-Library");
         int choice;
         do {
             choice = displayMenu();
             switch (choice) {
                 case 1: {
-                    System.out.println("you want to add a new book");
                     Book book = new Book();
                     System.out.println("enter title: ");
                     bufferDump = scanner.nextLine();
@@ -42,19 +31,21 @@ public class Main {
                 }
                 case 2: {
                     System.out.println("Enter book id");
-                    int id = scanner.nextInt();
-                    if(Book.findBook(id)) {
+                    String id = scanner.next();
+                    if(!isInteger(id)) {
+                        intError();
+                        break;
+                    }
+                    if(Book.findBook(Integer.parseInt(id))) {
                         Book book = new Book();
                         System.out.println("Enter new title");
                         bufferDump = scanner.nextLine();
                         book.setTitle(scanner.nextLine());
                         System.out.println("Enter new author");
                         book.setAuthor(scanner.nextLine());
-                        System.out.println("Enter new status");
-                        book.setStatus(scanner.nextLine());
                         System.out.println("Enter new ISBN code");
                         book.setIsbn(scanner.nextLine());
-                        if(book.updateBook(book, id)) {
+                        if(book.updateBook(book, Integer.parseInt(id))) {
                             System.out.println("Book updated successfully");
                         } else {
                             System.out.println("something went wrong");
@@ -65,11 +56,14 @@ public class Main {
                     break;
                 }
                 case 3: {
-                    System.out.println("you want to delete an old book");
                     System.out.println("Enter book id");
-                    int id = scanner.nextInt();
-                    if(Book.findBook(id)) {
-                        Book.deleteBook(id);
+                    String id = scanner.next();
+                    if(!isInteger(id)) {
+                        intError();
+                        break;
+                    }
+                    if(Book.findBook(Integer.parseInt(id))) {
+                        Book.deleteBook(Integer.parseInt(id));
                     } else {
                         System.out.println("Book not found");
                     }
@@ -84,7 +78,6 @@ public class Main {
                     break;
                 }
                 case 6: {
-                    System.out.println("you want to borrow a book");
                     System.out.println("Enter book code");
                     bufferDump = scanner.nextLine();
                     String isbn = scanner.nextLine();
@@ -93,7 +86,12 @@ public class Main {
                         System.out.println("Is client new or a member ?");
                         System.out.println("1. A new client");
                         System.out.println("2. A member");
-                        switch (scanner.nextInt()) {
+                        String type = scanner.next();
+                        if(!isInteger(type)) {
+                            intError();
+                            break;
+                        }
+                        switch (Integer.parseInt(type)) {
                             case 1: {
                                 System.out.print("Enter full name: ");
                                 bufferDump = scanner.nextLine();
@@ -140,7 +138,6 @@ public class Main {
                     break;
                 }
                 case 7: {
-                    System.out.println("you want to return a book");
                     System.out.print("Enter book code: ");
                     bufferDump = scanner.nextLine();
                     String isbn = scanner.nextLine();
@@ -163,7 +160,8 @@ public class Main {
                     break;
                 }
                 case 10: {
-                    System.out.println("you want to exit");
+                    System.out.println("EXIT");
+                    DBConnection.closeConnection();
                     break;
                 }
                 default: {
@@ -172,6 +170,17 @@ public class Main {
                 }
             }
         } while (choice != 10);
+    }
+
+    private static void login() {
+        System.out.print("enter your name: ");
+        String name = scanner.nextLine();
+        System.out.print("enter your identifier: ");
+        String identifier = scanner.nextLine();
+        if(!Librarian.login(name, identifier)) {
+            System.out.println("logging failed!");
+            login();
+        }
     }
 
     private static int displayMenu() {
@@ -189,6 +198,27 @@ public class Main {
         System.out.println("|             10. Exit                              |");
         System.out.println("|---------------------------------------------------|");
 
-        return scanner.nextInt();
+        String choice = scanner.next();
+
+        if(!isInteger(choice)) {
+            intError();
+            return displayMenu();
+        }
+        return Integer.parseInt(choice);
+    }
+
+    private static boolean isInteger(String string) {
+        boolean res = false;
+        try {
+            Integer.parseInt(string);
+            res = true;
+        } catch (NumberFormatException e) {
+            res = false;
+        }
+        return res;
+    }
+
+    private static void intError() {
+        System.out.println("Please enter a number");
     }
 }

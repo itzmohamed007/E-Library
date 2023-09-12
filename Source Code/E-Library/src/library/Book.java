@@ -106,12 +106,11 @@ public class Book {
     public boolean updateBook(Book book, int id) {
         boolean res = false;
         try {
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("UPDATE books set title = ?, author = ?, status = ?, isbn = ? WHERE id = ?");
+            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("UPDATE books set title = ?, author = ?, isbn = ? WHERE id = ?");
             preparedStatement.setString(1, book.getTitle());
             preparedStatement.setString(2, book.getAuthor());
-            preparedStatement.setString(3, book.getStatus());
-            preparedStatement.setString(4, book.getIsbn());
-            preparedStatement.setInt(5, id);
+            preparedStatement.setString(3, book.getIsbn());
+            preparedStatement.setInt(4, id);
             int rowCount = preparedStatement.executeUpdate();
             preparedStatement.close();
             if(rowCount > 0) {
@@ -140,8 +139,6 @@ public class Book {
         }
         return res;
     }
-
-
 
     public static boolean borrowBook(String endDate, int bookId, int membership) {
         boolean res = false;
@@ -283,15 +280,20 @@ public class Book {
         }
     }
 
-    private static void createFile(ResultSet stats) throws SQLException {
+    private static void createFile(ResultSet stats) {
         try {
             File file = new File("C:\\Users\\adm\\Desktop\\E-Library\\Source Code\\E-Library\\statistics report\\report.txt");
             FileWriter writer = new FileWriter("statistics report\\report.txt");
             if(!file.exists()) file.createNewFile();
-            writer.write("Library Report: \n");
-            writer.write("Available books: " + stats.getString("Available") + "\n");
-            writer.write("Borrowed books: " + stats.getString("Borrowed") + "\n");
-            writer.write("Lost books: " + stats.getString("Lost") + "\n");
+            try {
+                writer.write("Library Report: \n");
+                writer.write("Available books: " + stats.getString("Available") + "\n");
+                writer.write("Borrowed books: " + stats.getString("Borrowed") + "\n");
+                writer.write("Lost books: " + stats.getString("Lost") + "\n");
+            } catch (SQLException e) {
+                System.out.println("something went wrong while writing in stats file");
+                System.out.println(e.getMessage());
+            }
             writer.close();
         } catch (IOException e) {
             System.out.println("something went wrong while creating a new file");
