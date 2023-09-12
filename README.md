@@ -20,14 +20,16 @@ E-Library is a console application created to help librarians manage their libra
 ## User manual
 before accessing the menu, user have to be authenticated, which will be done by filling the informations step by step:
 1. Inserting user name:
-![](https://hackmd.io/_uploads/HJfG1W0Rh.png)
-2. Inserting user identifier:
-![](https://hackmd.io/_uploads/Hy9XkZRAh.png)
+<img width="886" alt="login1" src="https://github.com/itzmohamed007/E-Library/assets/112956399/cc7a6505-7aee-453d-a4b7-4a58e3aea200">
+
+3. Inserting user identifier:
+<img width="876" alt="login2" src="https://github.com/itzmohamed007/E-Library/assets/112956399/d1e98eb1-6900-4b0f-a9f5-79a3ef06afbf">
 
 after insering correct informations, the menu will show up:
-![](https://hackmd.io/_uploads/S158kZAAh.png)
-you can perfom all the available operations by choosing the matching number:
-![](https://hackmd.io/_uploads/SkZmlbRCn.png)
-after performing desired operations, you can stop the application by choosing exit option by hitting number 10:
-![](https://hackmd.io/_uploads/BkIPxb0Ah.png)
+<img width="882" alt="menu" src="https://github.com/itzmohamed007/E-Library/assets/112956399/faa3ca31-997b-4a2c-a488-6b214063b0a1">
 
+you can perfom all the available operations by choosing the matching number:
+<img width="829" alt="choosing" src="https://github.com/itzmohamed007/E-Library/assets/112956399/a16c48f1-3f98-437f-8735-3bcab4cecc2f">
+
+after performing desired operations, you can stop the application by choosing exit option by hitting number 10:
+<img width="867" alt="exit" src="https://github.com/itzmohamed007/E-Library/assets/112956399/4f2fd254-0c4d-452c-a9f5-778e99826f76">
